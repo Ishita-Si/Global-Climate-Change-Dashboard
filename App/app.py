@@ -8,26 +8,21 @@ st.set_page_config(page_title="Global Climate Change Dashboard", layout="wide")
 
 st.title("🌍 Global Climate Change Dashboard")
 
-# 📝 App Description
 st.markdown("""
 This dashboard visualizes historical CO₂ emissions and forecasts future trends using an ARIMA model.  
 Upload the dataset, select countries and time ranges to explore CO₂ emission patterns over the years.
 """)
 
-# 📤 Upload CSV
 uploaded_file = st.sidebar.file_uploader("Upload your CO₂ dataset CSV", type="csv")
 
-# If a file is uploaded
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 
-    # ✅ Sidebar Filters
+
     st.sidebar.subheader("🔍 Filter Options")
 
-    # Handle missing values for safety
     df = df.dropna(subset=['country', 'year', 'co2'])
 
-    # Unique country list
     countries = df['country'].unique().tolist()
     countries.sort()
 
@@ -37,21 +32,18 @@ if uploaded_file:
     max_year = int(df['year'].max())
     year_range = st.sidebar.slider("Select Year Range", min_year, max_year, (2000, max_year))
 
-    # ✅ Filter Data
     filtered_df = df[
         (df['country'].isin(selected_countries)) &
         (df['year'] >= year_range[0]) &
         (df['year'] <= year_range[1])
     ]
-    # ✅ Total Emissions Display
+    
     total_emissions = filtered_df['co2'].sum()
     st.metric(label="🌡️ Total CO₂ Emissions (Selected Range)", value=f"{total_emissions:,.2f} Million Metric Tons")
 
-    # Show raw data
     st.subheader("📊 Filtered Raw Data")
     st.dataframe(filtered_df.head())
 
-    # Forecast Function
     def arima_forecast(df):
         df_global = df.groupby('year')['co2'].sum().reset_index()
         df_prophet = df_global.rename(columns={"year": "ds", "co2": "y"})
@@ -74,7 +66,6 @@ if uploaded_file:
         ax.legend()
         return fig
 
-    # 🔮 Show Forecast Plot
     st.subheader("📈 Forecast Plot")
     fig = arima_forecast(filtered_df)
     st.pyplot(fig)
@@ -84,7 +75,6 @@ if uploaded_file:
     pivot_df = line_df.pivot(index='year', columns='country', values='co2')
     st.line_chart(pivot_df)
 
-    # 📥 Download CSVs
     st.download_button(
         label="📥 Download Filtered Data as CSV",
         data=filtered_df.to_csv(index=False).encode('utf-8'),
@@ -94,7 +84,6 @@ if uploaded_file:
 
     st.subheader("🗺️ Global CO₂ Emissions Map")
 
-# Use average over selected range
     map_df = filtered_df.groupby('country', as_index=False)['co2'].mean()
 
     fig_map = px.choropleth(
