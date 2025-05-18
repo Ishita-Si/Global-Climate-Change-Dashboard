@@ -33,8 +33,8 @@ An interactive dashboard built using **Streamlit**, **Plotly**, and **ARIMA** ti
 
 1. **Clone the repo**
 ```bash
-git clone https://github.com/your-username/climate-dashboard.git
-cd climate-dashboard
+git clone https://github.com/ishita-si/Global-Climate-Change-Dashboard.git
+cd Global-Climate-Change-Dashboard
 ```
 
 2. **Install dependencies**
